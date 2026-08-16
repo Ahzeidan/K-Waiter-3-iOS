@@ -1,0 +1,35 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+artifacts/
+release/
+releases/
+
+# iOS / Xcode generated files
+ios/App/Pods/
+ios/App/App/public/
+ios/App/build/
+ios/App/DerivedData/
+**/xcuserdata/
+*.xcuserstate
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Signing material must never be committed
+*.p12
+*.mobileprovision
+*.cer
+*.pem
+*.key
+
+# Test and build output
+playwright-report/
+test-results/
+vite*.log

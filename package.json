@@ -1,0 +1,46 @@
+{
+  "name": "k-waiter-3-ios",
+  "version": "3.0.0-rc.14",
+  "private": true,
+  "type": "module",
+  "description": "K-Waiter 3 tablet POS application for iPadOS",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "preview": "vite preview",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:web": "vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:production": "playwright test --config playwright.production.config.ts",
+    "check": "npm run typecheck && npm run test && npm run build:web",
+    "cap:sync": "cap sync ios && node scripts/fix-ios-spm-paths.mjs",
+    "ios:open": "cap open ios",
+    "prepare:ios": "npm run build && cap sync ios && node scripts/fix-ios-spm-paths.mjs",
+    "assets:store": "node scripts/generate-store-assets.mjs"
+  },
+  "dependencies": {
+    "@capacitor/app": "8.0.1",
+    "@capacitor/browser": "8.0.2",
+    "@capacitor/core": "8.4.1",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/preferences": "8.0.1",
+    "idb": "7.1.1",
+    "pinia": "3.0.4",
+    "pusher-js": "8.6.0",
+    "vue": "3.5.24",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.4.1",
+    "@capacitor/ios": "^8.4.1",
+    "@playwright/test": "^1.62.1",
+    "@vitejs/plugin-vue": "6.0.1",
+    "@vue/tsconfig": "0.8.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.9",
+    "vue-tsc": "3.1.4"
+  }
+}
