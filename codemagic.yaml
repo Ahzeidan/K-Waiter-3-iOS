@@ -1,0 +1,97 @@
+```yaml
+workflows:
+  ios-testflight:
+    name: K-Waiter iOS - TestFlight
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    integrations:
+      # غيّر KWAITER_ASC إلى اسم App Store Connect API integration
+      # الموجود عندك في Codemagic
+      app_store_connect: KWAITER_ASC
+
+    environment:
+      xcode: 26.3
+
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.microsolution.kwaiter3
+
+      vars:
+        BUNDLE_ID: "com.microsolution.kwaiter3"
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+
+      cache:
+        cache_paths:
+          - $HOME/Library/Caches/org.swift.swiftpm
+          - $CM_BUILD_DIR/ios/App/CapApp-SPM/.build
+
+    scripts:
+
+      # 1. Install Vue / TypeScript / Capacitor dependencies
+      - name: Install npm dependencies
+        script: |
+          npm ci
+
+      # 2. Check TypeScript
+      - name: TypeScript check
+        script: |
+          npm run typecheck
+
+      # 3. Build Vue production files
+      - name: Build Vue production
+        script: |
+          npm run build
+
+      # 4. Sync Capacitor web files and native iOS dependencies
+      - name: Sync Capacitor iOS
+        script: |
+          npx cap sync ios
+
+      # 5. Fix the SPM paths required by this project
+      - name: Fix iOS Swift Package paths
+        script: |
+          node scripts/fix-ios-spm-paths.mjs
+
+      # 6. Configure iOS signing
+      - name: Set up iOS code signing
+        script: |
+          xcode-project use-profiles
+
+      # 7. Build signed IPA
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --project "$CM_BUILD_DIR/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - ios/App/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
+
+      app_store_connect:
+        auth: integration
+
+        # ارفع الـ Build إلى TestFlight
+        submit_to_testflight: true
+
+        # لو عندك Internal Testing Group في TestFlight
+        # beta_groups:
+        #   - Internal Testers
+
+        # خليها false حاليًا.
+        # بعد التأكد من الـ Build في TestFlight
+        # يمكن تغييرها إلى true لإرسال التطبيق للمراجعة.
+        submit_to_app_store: false
+```
